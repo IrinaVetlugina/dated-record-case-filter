@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org)](https://doi.org)
 # CASE FILTER & MACRO-OS ECOSYSTEM (v1.3 — v7.0 + MCP / PyPI)
 **The Dated Record Method & Semantic Role Logic: A Deterministic Structural Guardrail Against LLM Hallucinations and Contractual Ambiguity.**
 
