@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Датированная запись — Пульт наблюдателя и Падежный фильтр (v1.3)</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --border: #334155;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --ok: #22c55e;
+    --err: #ef4444;
+    --warn: #f59e0b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    padding: 24px 16px;
+  }
+  .container { max-width: 920px; margin: 0 auto; }
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+  }
+  h1 { margin: 0 0 6px; font-size: 1.55rem; color: var(--accent); }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin: 0 0 12px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.8rem; }
+  .badge {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: #cbd5e1;
+  }
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  label { display: block; font-weight: 600; margin-bottom: 8px; }
+  textarea {
+    width: 100%;
+    min-height: 115px;
+    background: #0b1120;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: opacity 0.15s;
+  }
+  button:hover { opacity: 0.9; }
+  .btn-primary { background: var(--accent); color: #0f172a; }
+  .btn-preset {
+    background: #0f172a;
+    color: #cbd5e1;
+    border: 1px solid var(--border);
+    font-weight: 500;
+    font-size: 0.84rem;
+  }
+  .result-box {
+    display: none;
+    margin-top: 20px;
+    border-radius: 10px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    background: #0b1120;
+  }
+  .status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .status-pill {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .pill-ok { background: rgba(34,197,94,0.18); color: var(--ok); border: 1px solid var(--ok); }
+  .pill-err { background: rgba(239,68,68,0.18); color: var(--err); border: 1px solid var(--err); }
+  .score { font-weight: 700; font-size: 1rem; }
+  .cell-item {
+    background: rgba(239,68,68,0.1);
+    border-left: 3px solid var(--err);
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.92rem;
+  }
+  .cell-ok {
+    background: rgba(34,197,94,0.1);
+    border-left: 3px solid var(--ok);
+    padding: 10px 12px;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.92rem;
+  }
+  .directive {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: #1e293b;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #e2e8f0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .card-mini {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 0.88rem;
+  }
+  .card-mini h3 { margin: 0 0 6px; font-size: 0.95rem; color: var(--accent); }
+  footer {
+    margin-top: 28px;
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Датированная запись — Пульт наблюдателя и Падежный фильтр (v1.3)</h1>
+    <p class="subtitle">Детерминированный структурный барьер против галлюцинаций ИИ, «пустых кресел» и языковых подмен</p>
+    <div class="badges">
+      <span class="badge">Автор: Ирина Ветлугина</span>
+      <span class="badge">Приоритет нРИС № 852-137-831</span>
+      <span class="badge">DOI: 10.5281/zenodo.24516089</span>
+      <span class="badge">Ноль внешних зависимостей</span>
+    </div>
+  </header>
+
+  <div class="panel">
+    <label for="inputText">Введите утверждение, ответ нейросети или пункт договора для проверки:</label>
+    <textarea id="inputText" placeholder="Например: Учёные доказали, что эффективность выросла на 40%, и решение будет принято в ближайшее время..."></textarea>
+    <div class="controls">
+      <button class="btn-primary" onclick="runAudit()">Проверить через Падежный фильтр</button>
+      <button class="btn-preset" onclick="loadPreset(1)">Тест 1: Страдательный залог и резиновый срок</button>
+      <button class="btn-preset" onclick="loadPreset(2)">Тест 2: Намерение (Нулевой акт) и время-самозванец</button>
+      <button class="btn-preset" onclick="loadPreset(3)">Тест 3: Процент без базы и лже-именительный</button>
+      <button class="btn-preset" onclick="loadPreset(4)">Тест 4: Эталонная Датированная запись (E)</button>
+    </div>
+
+    <div id="resultBox" class="result-box">
+      <div class="status-header">
+        <span id="statusPill" class="status-pill"></span>
+        <span id="purityScore" class="score"></span>
+      </div>
+      <div id="findingsList"></div>
+      <div id="actionDirective" class="directive"></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card-mini">
+      <h3>Базовая формула события</h3>
+      <p><strong>E = Ω(T) ⇝ σ(O)</strong></p>
+      <p>Событие <strong>E</strong> физически и юридически существует только тогда, когда названный исполнитель пересекает <strong>Границу Творца</strong> (0 → 1) и оставляет проверяемый след <strong>σ(O)</strong> с привязкой к календарной дате.</p>
+    </div>
+    <div class="card-mini">
+      <h3>5 детерминированных шлюзов</h3>
+      <p>• <strong>Шлюз 1 (Нулевой акт 0):</strong> Планы и намерения без внешнего действия.<br>
+         • <strong>Шлюз 2 (Клетка 14):</strong> Страдательный / возвратный залог (ПУСТОЕ КРЕСЛО).<br>
+         • <strong>Шлюз 3 (Клетки 11 и 13):</strong> «Учёные доказали» и время-самозванец.<br>
+         • <strong>Шлюз 4 (Левый край [R]):</strong> Резиновые сроки без даты [t2].<br>
+         • <strong>Шлюз 5 (Клетка 17):</strong> Проценты без абсолютной базы.</p>
+    </div>
+  </div>
+
+  <footer>
+    Метод «Датированная запись» (v1.3) • Лицензия: CC BY-NC 4.0 (Бесплатно для некоммерческих задач) • Коммерческие лицензии: polutshe@mail.ru
+  </footer>
+</div>
+
+<script>
+const PRESETS = {
+  1: "На совещании было принято решение, что сроки поставки сдвинулись и акт приёмки будет подписан в разумный срок.",
+  2: "Мы планируем улучшить качество сервиса в ближайшее время — время всё расставит по своим местам.",
+  3: "Учёные доказали, что новая модель гарантированно повышает конверсию на 47%.",
+  4: "2026-11-20 ООО «Вектор» (ИНН 6315000000) перечислило 150 000 руб. по счёту № 42 (платёжное поручение № 108); скорость обработки снизилась с 12,0 сек до 3,4 сек (выборка n = 500 записей)."
+};
+
+function loadPreset(n) {
+  document.getElementById("inputText").value = PRESETS[n];
+  runAudit();
+}
+
+function runAudit() {
+  const raw = document.getElementById("inputText").value.trim();
+  if (!raw) return;
+  const low = raw.toLowerCase();
+  const findings = [];
+  let score = 100;
+
+  // Шлюз 1: Нулевой акт (0) — намерения до Границы Творца
+  const intentMatches = low.match(/\b(планируем|планирует|собираемся|собирается|хотим|стремимся|намерены|будем улучшать)\b/g);
+  if (intentMatches) {
+    findings.push({
+      cell: "Нулевой акт (0) — До Границы Творца",
+      detail: `Зафиксировано намерение без свершённого внешнего действия: «${[...new Set(intentMatches)].join(", ")}».`
+    });
+    score -= 25;
+  }
+
+  // Шлюз 2: Клетка 14 — Страдательный / возвратный залог (ПУСТОЕ КРЕСЛО)
+  const passiveMatches = low.match(/\b(было|была|были|будет)\s+[а-яё]+(?:но|на|ны|то|та|ты)\b|\b[а-яё]{4,}(?:лось|лась|лись|ётся|утся|ются|ится|атся|ятся)\b|\b(принято|решено|сделано|выполнено|утверждено|отправлено|подписано|производится|осуществляется)\b/g);
+  if (passiveMatches) {
+    findings.push({
+      cell: "Клетка 14 — Страдательный / возвратный залог (ПУСТОЕ КРЕСЛО)",
+      detail: `Исполнитель скрыт за безличной конструкцией: «${[...new Set(passiveMatches)].join(", ")}».`
+    });
+    score -= 30;
+  }
+
+  // Шлюз 3а: Клетка 11 — Лже-именительный падеж / Витрина
+  const nomMatches = low.match(/\b(уч[её]ные|эксперты|аналитики|исследователи)\s+(доказали|подтвердили|отмечают|считают|утверждают)\b|\b(наука|история|рынок|природа)\s+(доказала|показывает|повторяется|расставит)\b/g);
+  if (nomMatches) {
+    findings.push({
+      cell: "Клетка 11 — Лже-именительный падеж (Витрина)",
+      detail: `Анонимная ссылка на авторитет без первоисточника: «${[...new Set(nomMatches)].join(", ")}».`
+    });
+    score -= 25;
+  }
+
+  // Шлюз 3б: Клетка 13 — Время-самозванец
+  const timeMatches = low.match(/\bвремя\s+(?:всё\s+)?(покажет|расставит|лечит|рассудит)\b/g);
+  if (timeMatches) {
+    findings.push({
+      cell: "Клетка 13 — Время-самозванец",
+      detail: `Календарное время назначено исполнителем вместо человека: «${[...new Set(timeMatches)].join(", ")}».`
+    });
+    score -= 25;
+  }
+
+  // Шлюз 4: Левый край [R] — Резиновые сроки
+  const rubberMatches = low.match(/\bв\s+разумный\s+срок\b|\bв\s+ближайшее\s+время\b|\bпо\s+мере\s+(возможности|готовности)\b|\b(своевременно|оперативно|скоро|вскоре|позже|дополнительно)\b/g);
+  if (rubberMatches) {
+    findings.push({
+      cell: "Левый край [R] — Резиновый срок без даты верификации [t2]",
