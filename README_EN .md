@@ -3,7 +3,7 @@
 > **[Русская версия документации (README.md)](./README.md)**
 
 [![DOI](https://shields.io)](https://doi.org/10.5281/zenodo.24516089)
-[![nRIS](https://shields.io)](https://nris.ru)
+[![nRIS](https://shields.io)](https://xn--e1axe4b.xn--h1apes.xn--p1ai/object/?id=27428445211064eee31ca68e7b127b3d43c62ffbaa8c710e604d16582c0e440a&channel=media)
 [![License: CC BY-NC 4.0](https://shields.io)](./LICENSE.md)
 
 **A deterministic, model-agnostic structural guardrail against LLM hallucinations, passive-voice agent erasure ("Empty Seat"), and unanchored claims.**
