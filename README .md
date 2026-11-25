@@ -2,8 +2,8 @@
 
 > **[English version of documentation (README_EN.md)](./README_EN.md)**
 
-[![DOI](https://shields.io)](https://doi.org)
-[![nRIS](https://shields.io№_852--137--831-green)](https://nris.ru)
+https://doi.org/10.5281/zenodo.24516089
+https://xn--e1axe4b.xn--h1apes.xn--p1ai/object/?id=27428445211064eee31ca68e7b127b3d43c62ffbaa8c710e604d16582c0e440a&channel=media
 [![License: CC BY-NC 4.0](https://shields.io)](./LICENSE.md)
 
 **Детерминированный структурный барьер против галлюцинаций языковых моделей, скрытого пассивного залога («Пустое кресло») и речевых ловушек.**
