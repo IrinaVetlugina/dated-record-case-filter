@@ -2,7 +2,7 @@
 
 > **[Русская версия документации (README.md)](./README.md)**
 
-[![DOI](https://shields.io)](https://doi.org)
+[![DOI](https://shields.io)](https://doi.org/10.5281/zenodo.24516089)
 [![nRIS](https://shields.io)](https://nris.ru)
 [![License: CC BY-NC 4.0](https://shields.io)](./LICENSE.md)
 
