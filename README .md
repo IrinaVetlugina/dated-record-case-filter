@@ -1,4 +1,3 @@
-https://doi.org/10.5281/zenodo.24516089
 # Метод датированных записей и смысловая ролевая логика («Падежный фильтр» v1.3)
 
 > **[English version of documentation (README_EN.md)](./README_EN.md)**
