@@ -12,7 +12,7 @@
 
 ### Try Live in Your Browser (Zero Setup, Offline-Capable)
 
-* **[Launch All-in-One X-Ray Studio (English)](https://github.io)** — automatic audit of contracts, PR claims, and AI outputs with instant clean rewrites
+* **[Launch All-in-One X-Ray Studio (English)](https://github.com/IrinaVetlugina/dated-record-case-filter.git)** — automatic audit of contracts, PR claims, and AI outputs with instant clean rewrites
 * **[Launch Interactive Observer Console (18 Cells EN)](https://github.io)** — step-by-step diagnostic trainer
 
 ---
