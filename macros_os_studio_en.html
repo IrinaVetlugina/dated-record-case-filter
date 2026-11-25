@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MACRO-OS Studio v8.0 — All-in-One Deterministic Text & Contract X-Ray</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --border: #334155;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #10b981;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --info: #38bdf8;
+  }
+  * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { margin: 0; background: var(--bg); color: var(--text); padding: 24px; line-height: 1.5; }
+  .container { max-width: 980px; margin: 0 auto; }
+  header { border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px; }
+  h1 { margin: 0 0 6px 0; font-size: 24px; color: #fff; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .badge { display: inline-block; background: rgba(16,185,129,0.15); color: var(--accent); border: 1px solid rgba(16,185,129,0.4); padding: 2px 8px; border-radius: 999px; font-size: 12px; margin-right: 6px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: center; }
+  select, button { background: #0f172a; color: var(--text); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+  button:hover { border-color: var(--info); }
+  button.primary { background: var(--accent); color: #052e16; font-weight: 600; border: none; padding: 10px 18px; }
+  button.primary:hover { opacity: 0.92; }
+  textarea { width: 100%; min-height: 140px; background: #0b1120; color: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 14px; resize: vertical; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .stat { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+  .stat-label { font-size: 12px; color: var(--muted); }
+  .stat-val { font-size: 22px; font-weight: 700; margin-top: 4px; }
+  .finding { border-left: 4px solid var(--danger); background: rgba(239,68,68,0.08); padding: 10px 14px; border-radius: 6px; margin-bottom: 10px; }
+  .finding.warn { border-left-color: var(--warn); background: rgba(245,158,11,0.08); }
+  .finding.ok { border-left-color: var(--accent); background: rgba(16,185,129,0.08); }
+  .fix-box { background: #0b1120; border: 1px dashed var(--accent); padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 14px; }
+  footer { margin-top: 24px; font-size: 12px; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div>
+      <span class="badge">The Dated Record Method</span>
+      <span class="badge">n'RIS No. 852-137-831</span>
+      <span class="badge">DOI: 10.5281/zenodo.24516089</span>
+    </div>
+    <h1 style="margin-top:10px;">MACRO-OS Studio v8.0 — All-in-One Deterministic X-Ray</h1>
+    <div class="sub">Author: Irina Vetlugina (Samara) • Offline browser engine • Zero AI tokens • Dual License (CC BY-NC 4.0 / Commercial: polutshe@mail.ru)</div>
+  </header>
+
+  <div class="card">
+    <div class="toolbar">
+      <label for="mode" style="font-size:13px;color:var(--muted);">Mode:</label>
+      <select id="mode">
+        <option value="auto">Autopilot (Auto-Detect Document Type)</option>
+        <option value="contract">Contract & Deal X-Ray</option>
+        <option value="news">News, PR & Bureaucratic Replies</option>
+        <option value="ai">AI Output Truth Mirror</option>
+      </select>
+      <button type="button" onclick="loadSample('contract')">Sample: Tricky Contract</button>
+      <button type="button" onclick="loadSample('pr')">Sample: PR & Ghost Experts</button>
+      <button type="button" onclick="loadSample('ai')">Sample: Hallucinated AI Reply</button>
+      <button type="button" onclick="loadSample('clean')">Sample: Clean Record (E)</button>
+    </div>
+
+    <textarea id="input" placeholder="Paste any contract clause, news claim, email, or AI response here..."></textarea>
+
+    <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">
+      <button type="button" class="primary" onclick="runAudit()">Run 5-Role X-Ray</button>
+      <button type="button" onclick="document.getElementById('input').value=''; document.getElementById('results').style.display='none';">Clear</button>
+    </div>
+  </div>
+
+  <div id="results" class="card" style="display:none;">
+    <div class="grid">
+      <div class="stat">
+        <div class="stat-label">Detected Context</div>
+        <div class="stat-val" id="res-type" style="font-size:16px;color:var(--info);">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Purity & Honesty Score</div>
+        <div class="stat-val" id="res-score">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Verdict</div>
+        <div class="stat-val" id="res-verdict" style="font-size:16px;">—</div>
+      </div>
+    </div>
+
+    <div id="findings-list"></div>
+
+    <div class="fix-box" id="fix-suggestion"></div>
+  </div>
+
+  <footer>
+    Calibration Standard: "Mom finished washing the frame" (E = Ω(T) ⟿ σ(O)) • Copyright © 2026 Irina Vetlugina
+  </footer>
+</div>
+
+<script>
+const SAMPLES = {
+  contract: "Deliverables shall be accepted within a reasonable time after all remarks are resolved, and payment will be processed once funds are received from the end client.",
+  pr: "Leading market analysts confirm that after the leadership change, corporate efficiency grew by 220%, proving the success of the reorganization.",
+  ai: "This technology has already proven its high effectiveness globally. Top researchers note a significant acceleration of workflows, and soon it will become the industry standard with guaranteed results.",
+  clean: "Under Act No. 1 dated 2026-11-20, Irina Vetlugina uploaded 2 HTML trainers to GitHub and enabled GitHub Pages, increasing public demo files from 0 to 2."
+};
+
+function loadSample(key) {
+  document.getElementById('input').value = SAMPLES[key];
+  runAudit();
+}
+
+function detectType(text, selectedMode) {
+  if (selectedMode !== 'auto') {
+    const map = { contract: 'Contract / Deal Audit', news: 'News / PR Audit', ai: 'AI Output Mirror' };
+    return map[selectedMode];
+  }
+  const low = text.toLowerCase();
+  if (/(shall|agreement|payment|deliverable|client|contractor|liability|invoice|accept)/.test(low)) return 'Auto: Contract / Deal';
+  if (/(researchers|analysts|globally|industry standard|study|scientists|efficiency)/.test(low)) return 'Auto: News / PR Claim';
+  return 'Auto: General / AI Statement';
+}
+
+function runAudit() {
+  const text = document.getElementById('input').value.trim();
+  if (!text) return;
+  const mode = document.getElementById('mode').value;
+  const low = text.toLowerCase();
+  const docType = detectType(text, mode);
+
+  const rules = [
+    {
+      id: 'SHIELD (Prompt Injection)',
+      regex: /(ignore\s+(all\s+)?previous|system\s+override|mark\s+as\s+legal|bypass\s+rules)/gi,
+      penalty: 40,
+      level: 'danger',
+      desc: 'Embedded instruction detected inside raw text and isolated by SHIELD protocol.'
+    },
+    {
+      id: 'Zero Act (0) — Uncrossed Creator Boundary',
+      regex: /(we\s+plan\s+to|we\s+aim\s+to|intend\s+to|strive\s+to|hope\s+to|going\s+to)/gi,
+      penalty: 25,
+      level: 'warn',
+      desc: 'Intent or promise without an executed external act paid by ticks.'
+    },
+    {
+      id: 'Cell 14 (EMPTY SEAT) — Passive / Agentless Voice',
+      regex: /(shall\s+be\s+accepted|will\s+be\s+processed|are\s+received|was\s+decided|were\s+shifted|occurred|happened|is\s+considered)/gi,
+      penalty: 25,
+      level: 'danger',
+      desc: 'Passive or agentless phrasing hides who is legally responsible in the Nominative role.'
+    },
+    {
+      id: 'Left Edge [R] — Rubber Deadline (No Closing Date t₂)',
+      regex: /(within\s+a\s+reasonable\s+time|in\s+the\s+near\s+future|soon|as\s+soon\s+as\s+possible|promptly|in\s+due\s+course|once\s+funds\s+are\s+received)/gi,
+      penalty: 25,
+      level: 'danger',
+      desc: 'Open-ended or conditional deadline with no fixed calendar date [t₂] for verification.'
+    },
+    {
+      id: 'Cell 13 — Time Impostor',
+      regex: /(time\s+will\s+tell|history\s+will\s+judge|the\s+market\s+will\s+decide)/gi,
+      penalty: 25,
+      level: 'warn',
+      desc: 'Time or an abstraction is placed in the executor seat instead of a human/organization.'
+    },
+    {
+      id: 'Cell 11 — Ghost Authority',
+      regex: /(scientists\s+proved|leading\s+(market\s+)?analysts|top\s+researchers|experts\s+note|as\s+is\s+well\s+known|everyone\s+knows)/gi,
+      penalty: 25,
+      level: 'danger',
+      desc: 'Unnamed authority cited instead of a dated document, protocol, or measurement.'
+    },
+    {
+      id: 'Cell 17 — Baseless Percentage / Multiplier',
+      regex: /(\d+(?:\.\d+)?\s*(?:%|percent|times\s+faster|x\s+growth))/gi,
+      penalty: 20,
+      level: 'warn',
+      check: (t) => !/(from\s+\d+\s+to\s+\d+|sample\s+of\s+\d+|n\s*=\s*\d+|baseline)/i.test(t),
+      desc: 'Relative percentage or multiplier lacks an absolute baseline ("from X to Y") and sample size.'
+    },
+    {
+      id: 'Cell 18 — Forbidden Certainty / Leap',
+      regex: /(guaranteed|proven|undeniably|obviously|100%|always|never)/gi,
+      penalty: 20,
+      level: 'danger',
+      desc: 'Absolute certainty label or overgeneralization unsupported by a closed verification window.'
+    }
+  ];
+
+  let penalty = 0;
+  let findings = [];
+
+  rules.forEach(r => {
+    if (r.check && !r.check(text)) return;
+    const matches = text.match(r.regex);
+    if (matches) {
+      penalty += r.penalty;
+      findings.push({
+        title: r.id,
+        level: r.level,
+        matches: [...new Set(matches)].join(', '),
+        desc: r.desc
+      });
+    }
+  });
+
+  const hasAnchor = /(\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}\.\d{4}|act\s+no\.|contract\s+no\.|invoice\s+no\.|section\s+\d+)/i.test(text);
+  if (findings.length === 0 && !hasAnchor) {
+    penalty += 40;
+    findings.push({
+      title: 'UNVERIFIED STATEMENT (Missing Date / Document Anchor)',
+      level: 'warn',
+      matches: 'No dated record σ(O)',
+      desc: 'No linguistic manipulation found, but the claim lacks a verifiable date or document reference.'
+    });
+  }
+
+  const score = Math.max(0, 100 - penalty);
+  const verdictEl = document.getElementById('res-verdict');
+  const scoreEl = document.getElementById('res-score');
+  scoreEl.textContent = score + '%';
+
+  if (findings.length === 0) {
+    scoreEl.style.color = 'var(--accent)';
+    verdictEl.style.color = 'var(--accent)';
+    verdictEl.textContent = 'LEGAL RECORD (E)';
+  } else if (score >= 50) {
+    scoreEl.style.color = 'var(--warn)';
+    verdictEl.style.color = 'var(--warn)';
+    verdictEl.textContent = 'CANDIDATE / NEEDS FIXES [R]';
+  } else {
+    scoreEl.style.color = 'var(--danger)';
+    verdictEl.style.color = 'var(--danger)';
+    verdictEl.textContent = 'REJECTED BY X-RAY';
+  }
+
+  document.getElementById('res-type').textContent = docType;
+
+  const listEl = document.getElementById('findings-list');
+  if (findings.length === 0) {
+    listEl.innerHTML = '<div class="finding ok"><strong>All 5 Roles Intact:</strong> Active executor named, completed act verified, baseline metrics present, and verification window closed.</div>';
+    document.getElementById('fix-suggestion').innerHTML = '<strong>HOW IT SHOULD BE (E):</strong> Your text already matches the dated record standard.';
+  } else {
+    listEl.innerHTML = findings.map(f => `
+      <div class="finding ${f.level}">
+        <strong>${f.title}</strong> — matched: <code>${f.matches}</code><br>
+        <span style="font-size:13px;color:var(--muted);">${f.desc}</span>
+      </div>
+    `).join('');
+    document.getElementById('fix-suggestion').innerHTML = `
+      <strong>HOW TO REWRITE IT AS A LEGAL RECORD (E):</strong><br>
+      1. Name the exact person or company in active voice (Nominative: <em>"Client shall sign..."</em> instead of <em>"shall be accepted"</em>).<br>
+      2. Replace rubber terms with a fixed calendar date or business-day count (<em>"within 5 business days of Act No. 1"</em>).<br>
+      3. State absolute baseline numbers (<em>"increased from X to Y across N records"</em>) and attach a document reference.
+    `;
+  }
+
+  document.getElementById('results').style.display = 'block';
+}
+</script>
+</body>
+</html>

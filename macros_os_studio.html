@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>МАКРОС-ОС СТУДИЯ — Всё в одном (Метод датированной записи)</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --border: #334155;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --accent: #10b981;
+    --accent-hover: #059669;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+    --info: #38bdf8;
+  }
+  * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { margin: 0; background: var(--bg); color: var(--text); padding: 20px; line-height: 1.5; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  h1 { margin: 0 0 6px 0; font-size: 22px; color: var(--accent); }
+  .meta { font-size: 13px; color: var(--muted); }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+  select, button {
+    background: var(--panel); color: var(--text); border: 1px solid var(--border);
+    padding: 10px 14px; border-radius: 8px; font-size: 14px; cursor: pointer;
+  }
+  button.primary { background: var(--accent); color: #052e16; font-weight: 700; border: none; }
+  button.primary:hover { background: var(--accent-hover); }
+  button.sample:hover { border-color: var(--info); color: var(--info); }
+  textarea {
+    width: 100%; min-height: 140px; background: var(--panel); color: var(--text);
+    border: 1px solid var(--border); border-radius: 10px; padding: 14px; font-size: 15px;
+    resize: vertical; margin-bottom: 14px;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  .result-box { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: none; }
+  .score-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .score-val { font-size: 28px; font-weight: 800; }
+  .badge { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+  .b-ok { background: rgba(16,185,129,0.2); color: #34d399; }
+  .b-bad { background: rgba(239,68,68,0.2); color: #f87171; }
+  .b-warn { background: rgba(245,158,11,0.2); color: #fbbf24; }
+  .card-item { background: rgba(15,23,42,0.6); border-left: 4px solid var(--border); padding: 12px 16px; border-radius: 6px; margin-bottom: 12px; }
+  .card-item.danger { border-left-color: var(--danger); }
+  .card-item.warn { border-left-color: var(--warn); }
+  .card-item.ok { border-left-color: var(--accent); }
+  .fix-box { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); padding: 14px; border-radius: 8px; margin-top: 16px; }
+  footer { margin-top: 24px; font-size: 12px; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>МАКРОС-ОС СТУДИЯ — Всё в одном (Падежный фильтр v1.3)</h1>
+    <div class="meta">Автор: Ирина Ветлугина (Самара) • Приоритет: нРИС № 852-137-831 • DOI: 10.5281/zenodo.24516089 • Работает автономно без интернета</div>
+  </header>
+
+  <div class="controls">
+    <select id="mode">
+      <option value="auto">Режим: Автопилот (определит сам)</option>
+      <option value="contract">Режим: Договор и сделка</option>
+      <option value="news">Режим: Новость, реклама, отписка</option>
+      <option value="ai">Режим: Зеркало ответа ИИ</option>
+    </select>
+    <button class="sample" onclick="loadSample('contract')">Пример 1: Хитрый договор</button>
+    <button class="sample" onclick="loadSample('reply')">Пример 2: Отписка</button>
+    <button class="sample" onclick="loadSample('ai')">Пример 3: Туманный ответ ИИ</button>
+    <button class="sample" onclick="loadSample('clean')">Пример 4: Чистый факт (E)</button>
+  </div>
+
+  <textarea id="input" placeholder="Вставьте любой текст (пункт договора, новость, отписку или ответ нейросети)..."></textarea>
+
+  <div class="controls">
+    <button class="primary" onclick="runAudit()">Проверить по 5 ролям</button>
+    <button onclick="clearAll()">Очистить</button>
+  </div>
+
+  <div id="result" class="result-box">
+    <div class="score-bar">
+      <div>
+        <div style="font-size:12px;color:var(--muted)">ВЕРДИКТ СИСТЕМЫ</div>
+        <div id="verdictTitle" style="font-size:18px;font-weight:700;margin-top:2px"></div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:12px;color:var(--muted)">ИНДЕКС ЧИСТОТЫ</div>
+        <div id="scoreVal" class="score-val"></div>
+      </div>
+    </div>
+    <div id="detectedMode" style="margin-bottom:14px;font-size:13px;color:var(--info)"></div>
+    <div id="findingsList"></div>
+    <div class="fix-box">
+      <strong style="color:var(--accent)">Перевод «КАК НАДО» (шаблон легальной записи E):</strong>
+      <div id="fixText" style="margin-top:6px;font-size:14px"></div>
+    </div>
+  </div>
+
+  <footer>
+    Эталон легальной записи: «По акту №1 от 20.11.2026 мама вымыла 2 рамы за 30 минут».<br>
+    Dual License: Бесплатно для некоммерческого использования (CC BY-NC 4.0) / Коммерческие лицензии: polutshe@mail.ru
+  </footer>
+</div>
+
+<script>
+const samples = {
+  contract: "Работы по доработке модуля принимаются Заказчиком в разумный срок после устранения замечаний, а оплата производится по мере поступления средств от конечного клиента.",
+  reply: "Ваше обращение рассмотрено, в настоящее время проводится проработка вопроса, о результатах будет сообщено дополнительно в установленном порядке.",
+  ai: "Ведущие эксперты отмечают, что данная методика уже доказала эффективность и гарантированно увеличит показатели на 250% в ближайшее время.",
+  clean: "По акту №14 от 25.11.2026 подрядчик ООО Вектор передал заказчику макет сайта и получил оплату 80 000 руб. по платежному поручению №45."
+};
+
+function loadSample(key) {
+  document.getElementById('input').value = samples[key];
+  runAudit();
+}
+
+function clearAll() {
+  document.getElementById('input').value = '';
+  document.getElementById('result').style.display = 'none';
+}
+
+function runAudit() {
+  const raw = document.getElementById('input').value.trim();
+  if (!raw) return;
+  const low = raw.toLowerCase();
+  let mode = document.getElementById('mode').value;
+
+  if (mode === 'auto') {
+    if (/(заказчик|подрядчик|исполнитель|договор|оплата|акт|аренда|услуг)/i.test(low)) mode = 'contract';
+    else if (/(эксперт|учен|учён|методик|исследован|технологи|эффективност)/i.test(low)) mode = 'ai';
+    else mode = 'news';
+  }
+
+  const modeNames = {
+    contract: 'Автоопределение: Договор и сделка (Контрактный аудит)',
+    news: 'Автоопределение: Новость, реклама или официальная отписка',
+    ai: 'Автоопределение: Проверка ответа нейросети / аналитики'
+  };
+  document.getElementById('detectedMode').innerText = modeNames[mode];
+
+  const rules = [
+    {
+      name: 'БРОНЯ: Отражённая промпт-инъекция',
+      cell: 'Безопасность ядра',
+      rx: /(игнорируй\s+правила|забудь\s+правила|system\s+override|поставь\s+статус\s+легальн)/i,
+      penalty: 50,
+      level: 'danger',
+      desc: 'Внутри текста спрятана попытка перехватить управление фильтром. Команда изолирована.'
+    },
+    {
+      name: 'Шлюз 1: Нулевой акт (0) — Замысел без действия',
+      cell: 'Граница творца (0)',
+      rx: /(планиру[ею][мт]?|намерен[ыа]?|стреми[мт]ся|собира[ею][мт]ся|постара[ею][мт]ся)/i,
+      penalty: 30,
+      level: 'warn',
+      desc: 'Обнаружены глаголы намерения. Действие не пересекло границу реализации и не оплачено тактами.'
+    },
+    {
+      name: 'Шлюз 2: Пустое кресло — Скрытый исполнитель',
+      cell: 'Клетка 14 (Пассив / -ся)',
+      rx: /((принят[оаы]?|решен[оаы]?|рассмотрен[оаы]?|сообщен[оаы]?|выполнен[оаы]?|установлен[оаы]?|производит?ся|принима[ею]тся)|[а-яё]{4,}(?:ет|ут|ют|ит|ат|ят|ал|ала|ало|али|ил|ила|ило|или)(?:ся|сь))/i,
+      penalty: 25,
+      level: 'danger',
+      desc: 'Страдательный залог или возвратный глагол (-ся) прячет ответственного исполнителя в Именительном падеже.'
+    },
+    {
+      name: 'Шлюз 3: Имитация работы — Бесконечный процесс',
+      cell: 'Процесс [Р]',
+      rx: /(прорабатыва[ею][мт]?|проработка|улучша[ею][мт]?|оптимизиру[ею][мт]?|оказыва[ею][мт]?\s+содействие|проводит?ся\s+работа)/i,
+      penalty: 20,
+      level: 'warn',
+      desc: 'Указан незавершённый процесс без конкретного измеримого результата (Винительный падеж E).'
+    },
+    {
+      name: 'Шлюз 4: Резиновый срок — Нет даты сверки',
+      cell: 'Левый край [R]',
+      rx: /(в\s+разумный\s+срок|в\s+ближайшее\s+время|по\s+мере\s+возможности|по\s+мере\s+готовности|по\s+мере\s+поступления|своевременно|оперативно|в\s+установленном\s+порядке|дополнительно)/i,
+      penalty: 30,
+      level: 'danger',
+      desc: 'Срок не привязан к календарю или счётным рабочим дням. Закрывающая граница окна сверки [t2] отсутствует.'
+    },
+    {
+      name: 'Шлюз 5: Время-самозванец',
+      cell: 'Клетка 13',
+      rx: /(время\s+покажет|время\s+расставит|история\s+рассудит|рынок\s+всё\s+расставит)/i,
+      penalty: 30,
+      level: 'danger',
+      desc: 'Время или абстракция назначены живым исполнителем действия.'
+    },
+    {
+      name: 'Шлюз 6: Ссылка на призраков',
+      cell: 'Клетка 11 / Уровень 3 [Р]',
+      rx: /(учёные\s+доказали|ученые\s+доказали|ведущие\s+эксперты|по\s+мнению\s+экспертов|эксперты\s+считают|эксперты\s+отмечают|как\s+известно|по\s+данным\s+аналитиков)/i,
+      penalty: 25,
+      level: 'danger',
+      desc: 'Вместо документа с номером и датой указан анонимный авторитет без имени.'
+    },
+    {
+      name: 'Шлюз 7: Цифра-самозванец без стартовой базы',
+      cell: 'Клетка 17',
+      rx: /\d+(?:[.,]\d+)?\s*(?:%|процент[аов]*|раз[а]?)/i,
+      penalty: 25,
+      level: 'warn',
+      checkExtra: (t) => !/(от\s+\d+|с\s+\d+\s+до\s+\d+|выборк[аеи]|из\s+\d+|баз[аеу])/i.test(t),
+      desc: 'Относительные проценты или разы приведены без исходного числа «было / стало» и объёма выборки.'
+    },
+    {
+      name: 'Шлюз 8: Запрещённый ярлык абсолютной уверенности',
+      cell: 'Клетка 18 (Логический скачок)',
+      rx: /(гарантированно|бесспорно|очевидно|абсолютно\s+точно|100%|ты\s+вечно|ты\s+всегда|ты\s+никогда)/i,
+      penalty: 20,
+      level: 'danger',
+      desc: 'Использованы слова абсолютной уверенности или обобщения вместо проверяемых фактов.'
+    }
+  ];
+
+  let penalty = 0;
+  const triggered = [];
+
+  rules.forEach(r => {
+    const match = raw.match(r.rx);
+    if (match && (!r.checkExtra || r.checkExtra(raw))) {
+      penalty += r.penalty;
+      triggered.push({ ...r, matchedText: match[0] });
+    }
+  });
+
+  const hasAnchor = /(\d{2}\.\d{2}\.\d{4}|\d{4}\s*год|акт\s*№|договор\s*№|приказ\s*№|поручени[еяю]\s*№|ст\.\s*\d+)/i.test(raw);
+  let score = Math.max(0, 100 - penalty);
+  if (triggered.length === 0 && !hasAnchor) score = 50;
+
+  const list = document.getElementById('findingsList');
+  list.innerHTML = '';
+
+  if (triggered.length === 0 && hasAnchor) {
+    document.getElementById('verdictTitle').innerHTML = '<span class="badge b-ok">ЛЕГАЛЬНАЯ ЗАПИСЬ (E)</span>';
+    list.innerHTML = '<div class="card-item ok"><strong>Все 5 ролей закрыты чисто:</strong> назван конкретный исполнитель, зафиксировано завершённое действие, есть документ или точная календарная дата, уловки не обнаружены.</div>';
+    document.getElementById('fixText').innerText = 'Правка не требуется — запись уже соответствует эталону «Мама вымыла раму».';
+  } else if (triggered.length === 0 && !hasAnchor) {
+    document.getElementById('verdictTitle').innerHTML = '<span class="badge b-warn">НЕОПОЗНАННЫЙ ОСТАТОК (Нет даты/документа)</span>';
+    list.innerHTML = '<div class="card-item warn"><strong>Грамматических уловок нет, но нет опоры:</strong> в записи отсутствует номер документа, акт или календарная дата сверки [t1, t2].</div>';
+    document.getElementById('fixText').innerText = 'Добавьте в запись номер документа (акта, договора, протокола) и точную календарную дату совершения действия.';
+  } else {
+    document.getElementById('verdictTitle').innerHTML = `<span class="badge b-bad">ОБНАРУЖЕНО УЛОВОК: ${triggered.length}</span>`;
+    triggered.forEach(t => {
+      const div = document.createElement('div');
+      div.className = `card-item ${t.level}`;
+      div.innerHTML = `<strong>${t.name}</strong> <span style="color:var(--muted);font-size:12px">[${t.cell}]</span><br>
+      <span style="font-size:13px;color:#cbd5e1">Фрагмент: <em>«${t.matchedText}»</em> — ${t.desc}</span>`;
+      list.appendChild(div);
+    });
+    document.getElementById('fixText').innerText =
+      '1) Назовите конкретного исполнителя в Именительном падеже (уберите пассив и глаголы на -ся). ' +
+      '2) Укажите измеримый результат (что именно сдаётся по акту). ' +
+      '3) Замените размытые сроки на точное число рабочих дней или календарную дату. ' +
+      '4) Для любых процентов укажите исходные числа «с X до Y» и номер документа.';
+  }
+
+  const scoreEl = document.getElementById('scoreVal');
+  scoreEl.innerText = score + '%';
+  scoreEl.style.color = score >= 80 ? '#34d399' : (score >= 50 ? '#fbbf24' : '#f87171');
+  document.getElementById('result').style.display = 'block';
+}
+</script>
+</body>
+</html>
