@@ -1,4 +1,29 @@
-https://doi.org/10.5281/zenodo.24516089
+# The Dated Record Method & Semantic Role Logic (Case Filter v1.3)
+
+> **[Русская версия документации (README.md)](./README.md)**
+
+[![DOI](https://shields.io)](https://doi.org)
+[![nRIS](https://shields.io)](https://nris.ru)
+[![License: CC BY-NC 4.0](https://shields.io)](./LICENSE.md)
+
+**A deterministic, model-agnostic structural guardrail against LLM hallucinations, passive-voice agent erasure ("Empty Seat"), and unanchored claims.**
+
+---
+
+### Try Live in Your Browser (Zero Setup, Offline-Capable)
+
+* **[Launch All-in-One X-Ray Studio (English)](https://github.io)** — automatic audit of contracts, PR claims, and AI outputs with instant clean rewrites
+* **[Launch Interactive Observer Console (18 Cells EN)](https://github.io)** — step-by-step diagnostic trainer
+
+---
+
+### Intellectual Property Priority & Dual Licensing
+
+* **Author & Copyright Holder:** Irina Vetlugina (Samara, Russian Federation)
+* **National Registry Priority (n'RIS):** Deposited on November 20, 2026, Registration **No. 852-137-831** (Core Specification `v1.2`)
+* **CERN Open Science Archive (Zenodo DOI):** [https://doi.org](https://doi.org)
+* **Licensing:** Core specification (`v1.3`) and open browser tools are free for academic, research, and personal use under **CC BY-NC 4.0**. For commercial deployment, enterprise MCP integration, or full `MACRO-OS v8.0` suites, contact: **polutshe@mail.ru**
+
 
 # CASE FILTER & MACRO-OS ECOSYSTEM (v1.3 — v7.0 + MCP / PyPI)
 **The Dated Record Method & Semantic Role Logic: A Deterministic Structural Guardrail Against LLM Hallucinations and Contractual Ambiguity.**
