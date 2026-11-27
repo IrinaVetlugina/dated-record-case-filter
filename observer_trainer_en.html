@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Observer Trainer — 18 Structural Failure Cells | The Dated Record Method</title>
+<style>
+  :root {
+    --bg: #0b0f19;
+    --card: #131a2a;
+    --card-hover: #1a243a;
+    --border: #243049;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --danger: #f43f5e;
+    --success: #10b981;
+    --warn: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    padding: 20px 16px 48px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  header {
+    text-align: center;
+    padding: 24px 16px 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+  }
+  h1 { font-size: 26px; font-weight: 700; margin-bottom: 10px; color: #f8fafc; }
+  .subtitle { color: var(--muted); font-size: 15px; max-width: 680px; margin: 0 auto; }
+  .formula {
+    margin-top: 14px;
+    display: inline-block;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    background: #0f172a;
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 8px;
+    color: var(--accent);
+    font-size: 14px;
+  }
+  .tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 22px;
+  }
+  .tab-btn {
+    background: var(--card);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .tab-btn.active, .tab-btn:hover {
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+  .cell-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .cell-card:hover, .cell-card.selected {
+    background: var(--card-hover);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .cell-id {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .cell-title { font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 4px; }
+  .cell-tag { font-size: 12px; color: var(--muted); }
+  .detail-panel {
+    background: var(--card);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-title { font-size: 19px; font-weight: 700; color: #f8fafc; }
+  .detail-role {
+    font-size: 12px;
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--warn);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  .detail-desc { color: var(--text); font-size: 15px; margin-bottom: 16px; }
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 640px) { .compare { grid-template-columns: 1fr; } }
+  .box-bad, .box-good {
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .box-bad {
+    background: rgba(244, 63, 94, 0.08);
+    border: 1px solid rgba(244, 63, 94, 0.35);
+  }
+  .box-good {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+  }
+  .box-label-bad { color: var(--danger); font-weight: 700; font-size: 12px; text-transform: uppercase; margin-bottom: 6px; }
+  .box-label-good { color: var(--success); font-weight: 700; font-size: 12px; text-transform: uppercase; margin-bottom: 6px; }
+  .quiz-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .quiz-section h2 { font-size: 19px; margin-bottom: 8px; color: #f8fafc; }
+  .quiz-prompt {
+    background: #0f172a;
+    border-left: 3px solid var(--warn);
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-style: italic;
+    margin: 14px 0;
+    font-size: 15px;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    text-align: left;
+    background: #0f172a;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 11px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+  .quiz-opt:hover { border-color: var(--accent); }
+  .quiz-feedback { margin-top: 12px; font-size: 14px; font-weight: 600; }
+  .next-btn {
+    margin-top: 12px;
+    background: var(--accent);
+    color: #0b0f19;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  footer {
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  footer p { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">The Dated Record Method · MACRO-OS</div>
+    <h1>Observer Trainer: 18 Structural Failure Cells</h1>
+    <p class="subtitle">Interactive semantic role map for auditing contracts, business reports, and LLM outputs before acting on unverified claims.</p>
+    <div class="formula">E = &Omega;(T) &#10239; &sigma;(O)</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="filterCells('all', this)">All 18 Cells</button>
+    <button class="tab-btn" onclick="filterCells('agent', this)">Agent &amp; Passive Traps</button>
+    <button class="tab-btn" onclick="filterCells('boundary', this)">Time &amp; Intent Boundaries</button>
+    <button class="tab-btn" onclick="filterCells('metric', this)">Metrics &amp; Evidence</button>
+  </div>
+
+  <div class="grid" id="cellsGrid"></div>
+
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-header">
+      <div class="detail-title" id="dTitle">Select a cell above to inspect</div>
+      <div class="detail-role" id="dRole">5-Role Audit</div>
+    </div>
+    <p class="detail-desc" id="dDesc">Click any of the 18 structural cells to examine how grammatical role distortion hides missing accountability, unanchored metrics, or rubber deadlines.</p>
+    <div class="compare">
+      <div class="box-bad">
+        <div class="box-label-bad">Blocked / Trap Pattern</div>
+        <div id="dBad">"Services shall be deemed accepted automatically."</div>
+      </div>
+      <div class="box-good">
+        <div class="box-label-good">Approved / Dated Record</div>
+        <div id="dGood">"Client LLC tests the payment module on 2026-12-15 and signs Acceptance Act No. 1."</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Quick Trap Quiz</h2>
+    <p style="color: var(--muted); font-size: 14px;">Identify the primary structural defect in the statement below:</p>
+    <div class="quiz-prompt" id="qPrompt"></div>
+    <div class="quiz-options" id="qOptions"></div>
+    <div class="quiz-feedback" id="qFeedback"></div>
+    <button class="next-btn" id="qNext" onclick="nextQuestion()" style="display:none;">Next Case &rarr;</button>
+  </div>
+
+  <footer>
+    <p><strong>Author:</strong> Irina Vetlugina · <strong>License:</strong> CC BY-NC 4.0 (Personal &amp; Research) / Commercial Dual License</p>
+    <p><strong>Priority:</strong> nRIS Certificate No. 852-137-831 · CERN Zenodo Preprint DOI: 10.5281/zenodo.24516089</p>
+    <p><strong>Enterprise Licensing:</strong> polutshe@mail.ru</p>
+  </footer>
+</div>
+
+<script>
+const cells = [
+  { id: "Zero Act (0)", cat: "boundary", title: "Intent Paid as Action", role: "Creator Boundary", desc: "Promises, plans, and effort ('will try', 'plan to improve') do not change physical reality and carry zero contractual weight.", bad: "Contractor will make every reasonable effort to launch the module.", good: "Contractor deploys the payment module to production by 2026-12-15." },
+  { id: "Left Edge [R]", cat: "boundary", title: "Rubber Deadline", role: "Time Window [t1, t2]", desc: "Open-ended time markers ('soon', 'within a reasonable time', 'as available') cannot be audited on a calendar.", bad: "Delivery will be completed within a reasonable timeframe.", good: "Delivery window: from 2026-12-01 to 2026-12-10 inclusive." },
+  { id: "Cell 03", cat: "agent", title: "Nominalized Verb", role: "Subject vs. Action", desc: "Turning an active verb into an abstract noun ('optimization occurred', 'implementation happened') hides who performed the work.", bad: "System stabilization was achieved after the update.", good: "Lead Engineer Ivanov patched memory leak #402 on 2026-11-20." },
+  { id: "Cell 04", cat: "agent", title: "Institutional Mask", role: "Named Signatory", desc: "Hiding behind a vague department or system ('the platform decided', 'management believes') instead of a named accountable person.", bad: "The system automatically rejected the refund request.", good: "Support Lead Petrova denied Refund #88 under Clause 4.2 on 2026-11-25." },
+  { id: "Cell 05", cat: "metric", title: "Unverifiable Superlative", role: "Falsifiability", desc: "Absolute claims ('best-in-class', '100% secure', 'unprecedented') with no benchmark or test protocol.", bad: "Our AI pipeline guarantees 100% hallucination-free output.", good: "Deterministic regex gate blocked 98.4% of passive-voice bluffs across 500 test clauses." },
+  { id: "Cell 06", cat: "boundary", title: "Silent Auto-Acceptance", role: "Verification Act", desc: "Deeming work accepted by default silence rather than an explicit signed verification record.", bad: "Work is deemed accepted if no objections arrive within 24 hours.", good: "Client signs Acceptance Act No. 3 within 3 business days after sandbox test." },
+  { id: "Cell 07", cat: "metric", title: "Cherry-Picked Window", role: "Sample Integrity", desc: "Reporting a short spike without showing the full period or total sample size.", bad: "Daily signups jumped 4x on Tuesday.", good: "Signups rose from 10 to 40 on 2026-11-24; 30-day average moved from 12 to 15 (n=450)." },
+  { id: "Cell 08", cat: "agent", title: "Phantom Consensus", role: "Primary Source", desc: "Appealing to unnamed authorities ('experts say', 'studies prove', 'it is well known') without a document ID.", bad: "Industry analysts confirm this architecture reduces risk.", good: "NIST AI RMF 1.0 (Section 3.2, 2023) recommends deterministic output validation." },
+  { id: "Cell 09", cat: "boundary", title: "Conditional Escape Hatch", role: "Obligation Lock", desc: "Adding vague preconditions ('subject to resource availability') that void the obligation at will.", bad: "We will provide 24/7 support subject to engineer availability.", good: "Vendor guarantees 15-minute P1 incident response 24/7 under SLA Appendix B." },
+  { id: "Cell 10", cat: "metric", title: "Undefined Deliverable", role: "Artifact Spec", desc: "Promising an abstract outcome ('marketing strategy', 'AI integration') without file format, scope, or acceptance criteria.", bad: "Agency delivers a comprehensive growth strategy.", good: "Agency delivers a 25-page PDF media plan with 12-month CAC/LTV model by 2026-12-12." },
+  { id: "Cell 11", cat: "agent", title: "Word-Impostor as Subject", role: "Nominative Audit", desc: "Placing an abstract concept ('the market', 'science', 'history') in the Nominative case as the active doer.", bad: "Science has proven that this method always works.", good: "Preprint DOI 10.5281/zenodo.24516089 documents 18 structural failure patterns." },
+  { id: "Cell 12", cat: "metric", title: "Cost Without Unit Cap", role: "Resource Boundary", desc: "Open-ended billing ('time and materials', 'additional costs as needed') without a ceiling or approval trigger.", bad: "Extra compute hours will be billed separately at standard rates.", good: "Compute budget is capped at $1,200/month; overages require written PO approval." },
+  { id: "Cell 13", cat: "boundary", title: "Time Assigned as Doer", role: "Temporal Causality", desc: "Treating time itself as an agent ('time will tell', 'dates shifted') to excuse missed milestones.", bad: "Due to circumstances, the release timeline shifted to Q1.", good: "Product Director Smirnov postponed release from 2026-12-01 to 2027-01-15 (Change Order #2)." },
+  { id: "Cell 14", cat: "agent", title: "Empty Seat (Passive Voice)", role: "Subject Accountability", desc: "The classic grammatical trap: passive or reflexive verbs erase the human/legal actor responsible for the action.", bad: "The budget was utilized and the deliverables were finalized.", good: "Contractor LLC spent $45,000 and delivered 4 modules per Act No. 12 on 2026-11-27." },
+  { id: "Cell 15", cat: "boundary", title: "Retroactive Rule Shift", role: "Audit Immutability", desc: "Changing KPI definitions or acceptance criteria after the work period has already closed.", bad: "Conversion targets will be adjusted based on seasonal traffic.", good: "Target KPI (>= 3.5% checkout conversion) is locked in Contract Schedule A prior to launch." },
+  { id: "Cell 16", cat: "metric", title: "Correlation Sold as Cause", role: "Causal Proof", desc: "Claiming an action caused a metric change without isolating control variables.", bad: "Redesigning the button increased annual revenue by $200k.", good: "A/B test (n=12,400 users, Nov 2026) showed checkout lift from 2.1% to 2.6% (p < 0.01)." },
+  { id: "Cell 17", cat: "metric", title: "Unanchored Percentage", role: "Baseline [Before/After]", desc: "Relative percentages ('+240% growth', '3x faster') with no starting number, ending number, or sample size.", bad: "Lead generation increased by 240% after campaign launch.", good: "Qualified leads grew from 5 to 17 per month (n=320 visitors) between Oct and Nov 2026." },
+  { id: "Cell 18", cat: "agent", title: "Hallucinated Synthesis", role: "Unidentified Remainder", desc: "LLM fills missing facts with fluent guesswork instead of flagging an explicit 'Unidentified Remainder'.", bad: "According to internal records, the audit passed with zero warnings.", good: "UNIDENTIFIED REMAINDER: No audit log file provided in context; cannot verify status." }
+];
+
+const quizData = [
+  {
+    prompt: ""Contractor will apply best efforts to optimize latency in the nearest future."",
+    options: [
+      "Zero Act (0) + Left Edge [R]: effort paid instead of result, plus a rubber deadline",
+      "Cell 17: Unanchored percentage without baseline",
+      "Approved Dated Record: clear obligation and timeline"
+    ],
+    correct: 0,
+    explain: "Correct! 'Best efforts' is a Zero Act (no guaranteed artifact) and 'nearest future' is an uncheckable Left Edge [R] deadline."
+  },
+  {
+    prompt: ""Customer conversion grew by 180% after deploying the new AI assistant."",
+    options: [
+      "Cell 14: Empty Seat (Passive Voice)",
+      "Cell 17: Unanchored Percentage (missing before/after baseline and sample size)",
+      "Cell 06: Silent Auto-Acceptance"
+    ],
+    correct: 1,
+    explain: "Spot on! 180% could mean growing from 1 lead to 2.8 leads. Without 'from X to Y' and sample size n, it fails Cell 17."
+  },
+  {
+    prompt: ""The deliverables are deemed accepted unless written objections are received within 1 day."",
+    options: [
+      "Cell 11: Word-Impostor as Subject",
+      "Cell 14 & Cell 06: Empty Seat passive voice + Silent Auto-Acceptance trap",
+      "Cell 12: Cost without unit cap"
+    ],
+    correct: 1,
+    explain: "Exact match! 'Are deemed accepted' removes the human signatory (Empty Seat) and forces automatic acceptance without testing."
+  }
+];
+
+let currentFilter = 'all';
+let qIndex = 0;
+
+function renderCells() {
+  const grid = document.getElementById('cellsGrid');
+  grid.innerHTML = '';
+  const filtered = currentFilter === 'all' ? cells : cells.filter(c => c.cat === currentFilter);
+  filtered.forEach((c) => {
+    const div = document.createElement('div');
+    div.className = 'cell-card';
+    div.innerHTML = `<div class="cell-id">${c.id}</div><div class="cell-title">${c.title}</div><div class="cell-tag">${c.role}</div>`;
+    div.onclick = () => selectCell(c, div);
+    grid.appendChild(div);
+  });
+}
+
+function selectCell(c, el) {
+  document.querySelectorAll('.cell-card').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('dTitle').textContent = `${c.id} — ${c.title}`;
+  document.getElementById('dRole').textContent = c.role;
+  document.getElementById('dDesc').textContent = c.desc;
+  document.getElementById('dBad').textContent = `"${c.bad}"`;
+  document.getElementById('dGood').textContent = `"${c.good}"`;
+}
+
+function filterCells(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCells();
+}
+
+function renderQuiz() {
+  const q = quizData[qIndex];
+  document.getElementById('qPrompt').textContent = q.prompt;
+  const opts = document.getElementById('qOptions');
+  opts.innerHTML = '';
+  document.getElementById('qFeedback').textContent = '';
+  document.getElementById('qNext').style.display = 'none';
+  q.options.forEach((opt, idx) => {
+    const b = document.createElement('button');
+    b.className = 'quiz-opt';
+    b.textContent = opt;
+    b.onclick = () => checkAnswer(idx);
+    opts.appendChild(b);
+  });
+}
+
+function checkAnswer(idx) {
+  const q = quizData[qIndex];
+  const fb = document.getElementById('qFeedback');
+  if (idx === q.correct) {
+    fb.style.color = '#10b981';
+    fb.textContent = q.explain;
+  } else {
+    fb.style.color = '#f43f5e';
+    fb.textContent = 'Not quite — ' + q.explain;
+  }
+  document.getElementById('qNext').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  qIndex = (qIndex + 1) % quizData.length;
+  renderQuiz();
+}
+
+renderCells();
+renderQuiz();
+</script>
+</body>
+</html>
